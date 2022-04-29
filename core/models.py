@@ -1,5 +1,9 @@
-from django.core.cache import cache
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
+
+
+def get_default_vpn_provider() -> list:
+    return ["Access", "CyberGhost", "ExpressVPN"]
 
 
 class SettingsBaseModel(models.Model):
@@ -9,27 +13,20 @@ class SettingsBaseModel(models.Model):
     def save(self, *args, **kwargs):
         self.pk = 1
         super(SettingsBaseModel, self).save(*args, **kwargs)
-        self.set_cache()
-
-    @classmethod
-    def load(cls):
-        if cache.get(cls.__name__) is None:
-            obj, created = cls.objects.get_or_create(pk=1)
-            if not created:
-                obj.set_cache()
-        return cache.get(cls.__name__)
 
     def delete(self, *args, **kwargs):
         pass
 
-    def set_cache(self):
-        cache.set(self.__class__.__name__, self)
+    @classmethod
+    def load(cls):
+        obj, _ = cls.objects.get_or_create(pk=1)
+        return obj
 
 
 class GenericSettings(SettingsBaseModel):
-    ACCESS = "AC"
-    CYBERGHOST = "CY"
-    EXPRESSVPN = "EX"
+    ACCESS = "Access"
+    CYBERGHOST = "CyberGhost"
+    EXPRESSVPN = "ExpressVPN"
 
     VPN_PROVIDERS = [
         (ACCESS, "Access"),
@@ -38,5 +35,8 @@ class GenericSettings(SettingsBaseModel):
     ]
 
     vpn_providers = models.CharField(
-        max_length=2, choices=VPN_PROVIDERS, default=ACCESS
+        max_length=20, choices=VPN_PROVIDERS, default=ACCESS
+    )
+    default_vpn_provider = ArrayField(
+        models.CharField(max_length=20), default=get_default_vpn_provider
     )

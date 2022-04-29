@@ -17,11 +17,11 @@ def change_settings(request):
         vpn_providers = request.POST.get("vpn_providers")
         generic_settings = GenericSettings.load()
         generic_settings.vpn_providers = vpn_providers
-        generic_settings.save(update_fields=["vpn_providers"])
-        return JsonResponse(
-            {
-                "success": True,
-            }
+        default_vpn_provider = generic_settings.default_vpn_provider
+        default_vpn_provider.insert(
+            0, default_vpn_provider.pop(default_vpn_provider.index(vpn_providers))
         )
+        generic_settings.save(update_fields=["vpn_providers", "default_vpn_provider"])
+        return JsonResponse({"success": True})
     context = {"form": form}
     return render(request, "change_settings.html", context)
