@@ -1,3 +1,3 @@
 # dynamic_settings
 
-![main](https://github.com/github/docs/actions/workflows/django.yml/badge.svg?branch=main)
+![main](https://github.com/Sirneij/django_dynamic_global_settings/actions/workflows/django.yml/badge.svg?branch=main)
