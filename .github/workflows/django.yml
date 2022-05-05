@@ -1,4 +1,4 @@
-name: Dynamic_settings CI
+name: dynamic_settings CI
 
 on:
   push:
