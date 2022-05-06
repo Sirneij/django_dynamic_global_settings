@@ -27,10 +27,16 @@ class GenericSettings(models.Model):
 
     ADMIN_FROM_EMAIL = 'admin@dynamic_settings.com'
     USER_FROM_EMAIL = 'user@dynamic_settings.com'
+    AUDIT_FROM_EMAIL = 'audit@dynamic_settings.com'
+    EDITOR_FROM_EMAIL = 'editor@dynamic_settings.com'
+    ACCOUNT_FROM_EMAIL = 'account@dynamic_settings.com'
 
     FROM_EMAIL_ADDRESSES = [
         (ADMIN_FROM_EMAIL, 'From email address for admins'),
         (USER_FROM_EMAIL, 'From email address for users'),
+        (AUDIT_FROM_EMAIL, 'From email address for auditors'),
+        (EDITOR_FROM_EMAIL, 'From email address for editors'),
+        (ACCOUNT_FROM_EMAIL, 'From email address for accounts'),
     ]
 
     default_vpn_provider = ArrayField(

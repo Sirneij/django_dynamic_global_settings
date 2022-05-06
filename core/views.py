@@ -1,3 +1,5 @@
+import json
+
 from django.http.response import JsonResponse
 from django.shortcuts import render
 
@@ -35,17 +37,12 @@ def change_settings(request):
 
             elif provider_type.lower() == 'email':
                 generic_settings = GenericSettings.load()
-                selected_email_provider = request.POST.get('default_from_email')
-                default_email_provider = generic_settings.default_from_email
-                # put the selected sms provider at the begining.
-                default_email_provider.insert(
-                    0,
-                    default_email_provider.pop(
-                        default_email_provider.index(selected_email_provider)
-                    ),
+                reordered_email_provider = json.loads(
+                    request.POST.get('default_from_email')
                 )
+                print(reordered_email_provider)
+                generic_settings.default_from_email = reordered_email_provider
                 generic_settings.save(update_fields=['default_from_email'])
-
                 response = JsonResponse({'success': True})
 
             return response

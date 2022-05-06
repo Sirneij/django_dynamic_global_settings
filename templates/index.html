@@ -12,6 +12,65 @@
       integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
       crossorigin="anonymous"
     />
+    <script
+      src="https://kit.fontawesome.com/90f19d2d7f.js"
+      crossorigin="anonymous"
+    ></script>
+    <style>
+      :root {
+        --border-color: #e3e5e4;
+        --text-color: #34444f;
+        --background-color: #c3c7ca;
+      }
+      .justify-items {
+        background-color: #fff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+      }
+      .draggable-list {
+        border: 1px solid var(--border-color);
+        color: var(--text-color);
+        padding: 0;
+        margin: 0;
+        list-style-type: none;
+      }
+      .draggable-list li {
+        background-color: #fff;
+        display: flex;
+        flex: 1;
+      }
+      .draggable-list li:not(:last-of-type) {
+        border-bottom: 1px solid var(--border-color);
+      }
+      .draggable-list .number {
+        background-color: var(--background-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        height: 2.5rem;
+        width: 2.5rem;
+      }
+      .draggable-list .provider-name {
+        margin: 0 1.25rem 00;
+      }
+      .draggable {
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.5rem;
+        flex: 1;
+      }
+      .draggable-list li.over {
+        background-color: #eaeaea;
+      }
+      .draggable-list li.start .draggable {
+        background-color: #fffdd0;
+      }
+    </style>
   </head>
   <body>
     <div class="content">
@@ -23,7 +82,7 @@
             </div>
             <div class="card-body">
               <div class="d-flex">
-                <div class="input-group flex-nowrap">
+                <div class="input-group flex-wrap">
                   <span class="input-group-text" id="addon-wrapping">VPN</span>
                   {% for p in generic_settings.default_vpn_provider %}
                   <button
@@ -36,7 +95,7 @@
                   {% endfor %}
                 </div>
 
-                <div class="input-group flex-nowrap">
+                <div class="input-group flex-wrap">
                   <span class="input-group-text" id="addon-wrapping"
                     >Email</span
                   >
@@ -63,18 +122,21 @@
               <h4>Change VPN Provider</h4>
             </div>
             <div class="card-body">
-              <div class="form-row">
-                <div class="col-md-10 mb-3">
-                  <label for="vpnProvider">Select VPN Provider</label>
-                  <select class="form-select mb-3" id="vpnProvider">
-                    {% for provider in vpn_providers %}
-                    <option value="{{ provider.0 }}" 
-                  {% if generic_settings.default_vpn_provider.0 == provider.0 %}selected{% endif %}>
-                    {{ provider.1 }}
-                  </option>
-                    {% endfor %}
-                  </select>
-                </div>
+              <div class="justify-items">
+                <ul class="col-md-10 mb-3 draggable-list" id="draggableListOne">
+                  {% for provider in vpn_providers %}
+                  <li data-index="{{forloop.counter0}}">
+                    <span class="number">{{forloop.counter}}</span>
+                    <div class="draggable" draggable="true">
+                      <p class="provider-name">{{provider.0}}</p>
+                      <i class="fas fa-grip-lines"></i>
+                    </div>
+                  </li>
+                  {% endfor %}
+                </ul>
+                <button type="button" class="btn btn-success" id="saveVPNOrder">
+                  Save Order
+                </button>
               </div>
             </div>
           </div>
@@ -82,22 +144,28 @@
         <div class="col-md-5 grid-margin stretch-card">
           <div class="card">
             <div class="card-header">
-              <h4>Change Email Provider</h4>
+              <h4>Change Email Provider order</h4>
             </div>
             <div class="card-body">
-             
-              <div class="form-row">
-                <div class="col-md-10 mb-3">
-                  <label for="emailProvider">Select Email Provider</label>
-                  <select class="form-select mb-3" id="emailProvider">
-                    {% for provider in email_providers %}
-                    <option value="{{ provider.0 }}" 
-            {% if generic_settings.default_from_email.0 == provider.0 %}selected{% endif %}>
-                      {{ provider.1 }}
-                    </option>
-                    {% endfor %}
-                  </select>
-                </div>
+              <div class="justify-items">
+                <ul class="col-md-10 mb-3 draggable-list" id="draggableListTwo">
+                  {% for provider in email_providers %}
+                  <li data-index="{{forloop.counter0}}">
+                    <span class="number">{{forloop.counter}}</span>
+                    <div class="draggable" draggable="true">
+                      <p class="provider-name">{{provider.0}}</p>
+                      <i class="fas fa-grip-lines"></i>
+                    </div>
+                  </li>
+                  {% endfor %}
+                </ul>
+                <button
+                  type="button"
+                  class="btn btn-success"
+                  id="saveEmailOrder"
+                >
+                  Save Order
+                </button>
               </div>
             </div>
           </div>
@@ -131,63 +199,113 @@
         });
       }
 
+      const draggables = document.querySelectorAll('.draggable');
+      const dragListItems = document.querySelectorAll('#draggableListTwo li');
+      const saveEmailOrderBtn = document.getElementById('saveEmailOrder');
+      const listItems = [];
+      const reorderedListItems = [];
+      let dragStartIndex = 0;
+
+      const swapItems = (fromIndex, toIndex) => {
+        const firstItem = listItems[fromIndex].querySelector('.draggable');
+        const secondItem = listItems[toIndex].querySelector('.draggable');
+
+        listItems[fromIndex].appendChild(secondItem);
+        listItems[toIndex].appendChild(firstItem);
+      };
+
+      function dragStart() {
+        this.classList.add('start');
+        dragStartIndex = +this.closest('li').getAttribute('data-index');
+      }
+      function dragOver(e) {
+        e.preventDefault();
+        this.classList.add('over');
+      }
+      function dragDrop() {
+        const dragEndIndex = this.getAttribute('data-index');
+        swapItems(dragStartIndex, dragEndIndex);
+        this.classList.remove('over');
+        this.classList.remove('start');
+      }
+      function dragEnter() {
+        this.classList.add('over');
+      }
+      function dragLeave() {
+        this.classList.remove('over');
+        this.classList.remove('start');
+      }
+
+      draggables.forEach((draggable) => {
+        draggable.addEventListener('dragstart', dragStart);
+      });
+      dragListItems.forEach((item) => {
+        listItems.push(item);
+        item.addEventListener('dragover', dragOver);
+        item.addEventListener('drop', dragDrop);
+        item.addEventListener('dragenter', dragEnter);
+        item.addEventListener('dragleave', dragLeave);
+      });
+
       const changeProvidersPriority = (
-        providerSelector,
         providerModelField,
+        providerModelFieldValue,
         providerType,
         providerTypeText
       ) => {
-        providerSelector.addEventListener('change', (e) => {
-          e.preventDefault();
-          if (
-            !confirm(
-              `Are you sure you want to change ${providerTypeText} Providers priority?`
-            )
-          ) {
-            return;
-          }
-          const data = new FormData();
-          data.append(providerModelField, e.target.value);
-          data.append('provider_type', providerType);
-          $.ajax({
-            url: "{% url 'core:change_settings' %}",
-            method: 'POST',
-            data: data,
-            dataType: 'json',
-            success: function (response) {
-              if (response.success) {
-                alert(
-                  `${providerTypeText} Providers priority changed successfully.`
-                );
-                window.location.href = location.href;
-              }
-            },
-            error: function (error) {
-              console.error(error);
-            },
-            cache: false,
-            processData: false,
-            contentType: false,
-          });
+        if (
+          !confirm(
+            `Are you sure you want to change ${providerTypeText} Providers priority?`
+          )
+        ) {
+          return;
+        }
+        const data = new FormData();
+        data.append(providerModelField, providerModelFieldValue);
+        data.append('provider_type', providerType);
+        $.ajax({
+          url: "{% url 'core:change_settings' %}",
+          method: 'POST',
+          data: data,
+          dataType: 'json',
+          success: function (response) {
+            if (response.success) {
+              alert(
+                `${providerTypeText} Providers priority changed successfully.`
+              );
+              window.location.href = location.href;
+            }
+          },
+          error: function (error) {
+            console.error(error);
+          },
+          cache: false,
+          processData: false,
+          contentType: false,
         });
       };
 
-      const vpnProviderSelect = document.getElementById('vpnProvider');
-      const emailProviderSelect = document.getElementById('emailProvider');
+      // changeProvidersPriority(
+      //   vpnProviderSelect,
+      //   'default_vpn_provider',
+      //   'VPN',
+      //   'VPN'
+      // );
 
-      changeProvidersPriority(
-        vpnProviderSelect,
-        'default_vpn_provider',
-        'VPN',
-        'VPN'
-      );
-
-      changeProvidersPriority(
-        emailProviderSelect,
-        'default_from_email',
-        'Email',
-        'Email address'
-      );
+      saveEmailOrderBtn.addEventListener('click', (event) => {
+        event.preventDefault();
+        listItems.forEach((item) => {
+          reorderedListItems.push(
+            item.querySelector('.draggable').innerText.trim()
+          );
+        });
+        changeProvidersPriority(
+          'default_from_email',
+          JSON.stringify(reorderedListItems),
+          'Email',
+          'Email address'
+        );
+      });
     </script>
   </body>
 </html>
