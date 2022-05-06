@@ -11,7 +11,10 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 import os
+from email.policy import default
 from pathlib import Path
+
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -78,9 +81,9 @@ WSGI_APPLICATION = 'dynamic_settings.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'dynamic_settings_db',
-        'USER': 'quickcheck',
-        'PASSWORD': 'password',
+        'NAME': config('DB_NAME', default='dynamic_settings_db'),
+        'USER': config('DB_USER', default='sirneij'),
+        'PASSWORD': config('DB_PASSWORD', default='password'),
         'HOST': 'localhost',
         'PORT': 5432,
     },
