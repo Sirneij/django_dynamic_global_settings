@@ -140,9 +140,11 @@ STATIC_ROOT: str = BASE_DIR / 'staticfiles'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD: str = 'django.db.models.BigAutoField'
-CSRF_COOKIE_SECURE: bool = True
-SECURE_SSL_REDIRECT: bool = True
-SESSION_COOKIE_SECURE: bool = True
+
+if not DEBUG:
+    CSRF_COOKIE_SECURE: bool = True
+    SECURE_SSL_REDIRECT: bool = True
+    SESSION_COOKIE_SECURE: bool = True
 
 
 db_from_env = dj_database_url.config(conn_max_age=500)
