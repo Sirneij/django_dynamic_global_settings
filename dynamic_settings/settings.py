@@ -26,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY: str = config(
     'SECRET_KEY',
-    default='django-insecure-e0-8sjm@)(fh@fk9a!i8yy2%hd&lu38qsw(_0jkk#4hx4x+qkm',
+    default='!6pkd1-^273*f=jcu=bew9myps@4b364au$u7=_h-icml!)h%u',
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -140,6 +140,9 @@ STATIC_ROOT: str = BASE_DIR / 'staticfiles'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD: str = 'django.db.models.BigAutoField'
+CSRF_COOKIE_SECURE: bool = True
+SECURE_SSL_REDIRECT: bool = True
+SESSION_COOKIE_SECURE: bool = True
 
 
 db_from_env = dj_database_url.config(conn_max_age=500)
