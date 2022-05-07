@@ -124,11 +124,11 @@
             <div class="card-body">
               <div class="justify-items">
                 <ul class="col-md-10 mb-3 draggable-list" id="draggableListOne">
-                  {% for provider in vpn_providers %}
+                  {% for provider in generic_settings.default_vpn_provider %}
                   <li data-index="{{forloop.counter0}}">
                     <span class="number">{{forloop.counter}}</span>
                     <div class="draggable" draggable="true">
-                      <p class="provider-name">{{provider.0}}</p>
+                      <p class="provider-name">{{provider}}</p>
                       <i class="fas fa-grip-lines"></i>
                     </div>
                   </li>
@@ -149,11 +149,11 @@
             <div class="card-body">
               <div class="justify-items">
                 <ul class="col-md-10 mb-3 draggable-list" id="draggableListTwo">
-                  {% for provider in email_providers %}
+                  {% for provider in generic_settings.default_from_email %}
                   <li data-index="{{forloop.counter0}}">
                     <span class="number">{{forloop.counter}}</span>
                     <div class="draggable" draggable="true">
-                      <p class="provider-name">{{provider.0}}</p>
+                      <p class="provider-name">{{provider}}</p>
                       <i class="fas fa-grip-lines"></i>
                     </div>
                   </li>
@@ -287,13 +287,6 @@
           contentType: false,
         });
       };
-
-      // changeProvidersPriority(
-      //   vpnProviderSelect,
-      //   'default_vpn_provider',
-      //   'VPN',
-      //   'VPN'
-      // );
 
       const saveEmailOrderBtn = document.getElementById('saveEmailOrder');
       const saveVPNOrderBtn = document.getElementById('saveVPNOrder');

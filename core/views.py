@@ -11,8 +11,6 @@ def index(request):
     generic_settings = GenericSettings.load()
     context = {
         'generic_settings': generic_settings,
-        'vpn_providers': GenericSettings.VPN_PROVIDERS,
-        'email_providers': GenericSettings.FROM_EMAIL_ADDRESSES,
     }
     return render(request, 'index.html', context)
 
