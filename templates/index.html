@@ -75,40 +75,52 @@
   <body>
     <div class="content">
       <div class="row justify-content-center mt-5">
-        <div class="col-md-10 grid-margin stretch-card">
+        <div class="col-md-5 grid-margin stretch-card">
           <div class="card">
-            <div class="card-header">
-              <h4>Current Prioritized providers</h4>
-            </div>
+            <div class="card-header">Current Priority of VPN Providers</div>
             <div class="card-body">
-              <div class="d-flex">
-                <div class="input-group flex-wrap">
-                  <span class="input-group-text" id="addon-wrapping">VPN</span>
-                  {% for p in generic_settings.default_vpn_provider %}
+              <div
+                class="btn-group-vertical d-flex"
+                role="group"
+                aria-label="Default VPN Provider priority"
+              >
+                {% for p in generic_settings.default_vpn_provider %}
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <div class="input-group-text">{{forloop.counter}}</div>
+                  </div>
                   <button
                     type="button"
-                    class="btn btn-{% if forloop.first %}success{% else %}danger{% endif %}"
-                    disabled
-                  >
-                    {{p|capfirst}}
-                  </button>
-                  {% endfor %}
-                </div>
-
-                <div class="input-group flex-wrap">
-                  <span class="input-group-text" id="addon-wrapping"
-                    >Email</span
-                  >
-                  {% for p in generic_settings.default_from_email %}
-                  <button
-                    type="button"
-                    class="btn btn-{% if forloop.first %}success{% else %}danger{% endif %}"
+                    class="btn-outline-{% if forloop.first %}success{% else %}primary{% endif %} btn w-75"
                     disabled
                   >
                     {{p}}
                   </button>
-                  {% endfor %}
                 </div>
+
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-5 grid-margin stretch-card">
+          <div class="card">
+            <div class="card-header">Current Priority of Email addresses</div>
+            <div class="card-body">
+              <div
+                class="btn-group d-flex flex-wrap"
+                role="group"
+                aria-label="Default Email priority"
+              >
+                {% for p in generic_settings.default_from_email %}
+                <button
+                  type="button"
+                  class="btn btn-outline-{% if forloop.first %}success{% else %}primary{% endif %}"
+                  disabled
+                >
+                  {{p}}
+                </button>
+                {% endfor %}
               </div>
             </div>
           </div>
