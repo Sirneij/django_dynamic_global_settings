@@ -24,13 +24,11 @@ def change_settings(request):
         if provider_type:
             if provider_type.lower() == 'vpn':
                 generic_settings = GenericSettings.load()
-                vpn_provider = request.POST.get('default_vpn_provider')
-                default_vpn_provider = generic_settings.default_vpn_provider
-                # put the selected otp provider at the begining.
-                default_vpn_provider.insert(
-                    0,
-                    default_vpn_provider.pop(default_vpn_provider.index(vpn_provider)),
+                reordered_vpn_provider = json.loads(
+                    request.POST.get('default_vpn_provider')
                 )
+
+                generic_settings.default_vpn_provider = reordered_vpn_provider
                 generic_settings.save(update_fields=['default_vpn_provider'])
 
                 response = JsonResponse({'success': True})
@@ -40,7 +38,7 @@ def change_settings(request):
                 reordered_email_provider = json.loads(
                     request.POST.get('default_from_email')
                 )
-                print(reordered_email_provider)
+
                 generic_settings.default_from_email = reordered_email_provider
                 generic_settings.save(update_fields=['default_from_email'])
                 response = JsonResponse({'success': True})

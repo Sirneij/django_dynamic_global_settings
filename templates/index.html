@@ -135,7 +135,7 @@
                   {% endfor %}
                 </ul>
                 <button type="button" class="btn btn-success" id="saveVPNOrder">
-                  Save Order
+                  Save VPN Order
                 </button>
               </div>
             </div>
@@ -164,7 +164,7 @@
                   class="btn btn-success"
                   id="saveEmailOrder"
                 >
-                  Save Order
+                  Save Email Order
                 </button>
               </div>
             </div>
@@ -199,14 +199,7 @@
         });
       }
 
-      const draggables = document.querySelectorAll('.draggable');
-      const dragListItems = document.querySelectorAll('#draggableListTwo li');
-      const saveEmailOrderBtn = document.getElementById('saveEmailOrder');
-      const listItems = [];
-      const reorderedListItems = [];
-      let dragStartIndex = 0;
-
-      const swapItems = (fromIndex, toIndex) => {
+      const swapItems = (fromIndex, toIndex, listItems) => {
         const firstItem = listItems[fromIndex].querySelector('.draggable');
         const secondItem = listItems[toIndex].querySelector('.draggable');
 
@@ -214,38 +207,48 @@
         listItems[toIndex].appendChild(firstItem);
       };
 
-      function dragStart() {
-        this.classList.add('start');
-        dragStartIndex = +this.closest('li').getAttribute('data-index');
-      }
-      function dragOver(e) {
-        e.preventDefault();
-        this.classList.add('over');
-      }
-      function dragDrop() {
-        const dragEndIndex = this.getAttribute('data-index');
-        swapItems(dragStartIndex, dragEndIndex);
-        this.classList.remove('over');
-        this.classList.remove('start');
-      }
-      function dragEnter() {
-        this.classList.add('over');
-      }
-      function dragLeave() {
-        this.classList.remove('over');
-        this.classList.remove('start');
-      }
+      const addDragAndDropEventListeners = (
+        listItemsToDragSelector,
+        listItems
+      ) => {
+        const listItemsToDrag = document.querySelectorAll(
+          listItemsToDragSelector
+        );
 
-      draggables.forEach((draggable) => {
-        draggable.addEventListener('dragstart', dragStart);
-      });
-      dragListItems.forEach((item) => {
-        listItems.push(item);
-        item.addEventListener('dragover', dragOver);
-        item.addEventListener('drop', dragDrop);
-        item.addEventListener('dragenter', dragEnter);
-        item.addEventListener('dragleave', dragLeave);
-      });
+        const draggables = document.querySelectorAll(
+          `${listItemsToDragSelector} .draggable`
+        );
+
+        let dragStartIndex = 0;
+        draggables.forEach((draggable) => {
+          draggable.addEventListener('dragstart', (event) => {
+            event.currentTarget.classList.add('start');
+            dragStartIndex = +event.currentTarget
+              .closest('li')
+              .getAttribute('data-index');
+          });
+        });
+        listItemsToDrag.forEach((item) => {
+          listItems.push(item);
+          item.addEventListener('dragover', (event) => {
+            event.preventDefault();
+            event.currentTarget.classList.add('over');
+          });
+          item.addEventListener('drop', (event) => {
+            const dragEndIndex = event.currentTarget.getAttribute('data-index');
+            swapItems(dragStartIndex, dragEndIndex, listItems);
+            event.currentTarget.classList.remove('over');
+            event.currentTarget.classList.remove('start');
+          });
+          item.addEventListener('dragenter', (event) => {
+            event.currentTarget.classList.add('over');
+          });
+          item.addEventListener('dragleave', (event) => {
+            event.currentTarget.classList.remove('over');
+            event.currentTarget.classList.remove('start');
+          });
+        });
+      };
 
       const changeProvidersPriority = (
         providerModelField,
@@ -292,16 +295,41 @@
       //   'VPN'
       // );
 
+      const saveEmailOrderBtn = document.getElementById('saveEmailOrder');
+      const saveVPNOrderBtn = document.getElementById('saveVPNOrder');
+      const firstListItems = [];
+      const secondListItems = [];
+      const firstReorderedListItems = [];
+      const secondReorderedListItems = [];
+
+      addDragAndDropEventListeners('#draggableListOne li', firstListItems);
+      addDragAndDropEventListeners('#draggableListTwo li', secondListItems);
+
+      saveVPNOrderBtn.addEventListener('click', (event) => {
+        event.preventDefault();
+        firstListItems.forEach((item) => {
+          firstReorderedListItems.push(
+            item.querySelector('.draggable').innerText.trim()
+          );
+        });
+        changeProvidersPriority(
+          'default_vpn_provider',
+          JSON.stringify(firstReorderedListItems),
+          'VPN',
+          'VPN'
+        );
+      });
+
       saveEmailOrderBtn.addEventListener('click', (event) => {
         event.preventDefault();
-        listItems.forEach((item) => {
-          reorderedListItems.push(
+        secondListItems.forEach((item) => {
+          secondReorderedListItems.push(
             item.querySelector('.draggable').innerText.trim()
           );
         });
         changeProvidersPriority(
           'default_from_email',
-          JSON.stringify(reorderedListItems),
+          JSON.stringify(secondReorderedListItems),
           'Email',
           'Email address'
         );

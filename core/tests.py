@@ -1,3 +1,5 @@
+import json
+
 from django.test import Client, TestCase
 from django.urls import reverse
 
@@ -36,7 +38,13 @@ class ModelGenericSettingsTests(TestCase):
             )
             self.assertEqual(
                 new_settings.default_from_email,
-                ['admin@dynamic_settings.com', 'user@dynamic_settings.com'],
+                [
+                    'admin@dynamic_settings.com',
+                    'user@dynamic_settings.com',
+                    'audit@dynamic_settings.com',
+                    'editor@dynamic_settings.com',
+                    'account@dynamic_settings.com',
+                ],
             )
 
         test_for_instance()
@@ -58,10 +66,24 @@ class IndexTest(TestCase):
 class ChangeTestingTest(TestCase):
     def setUp(self) -> None:
         self.client = Client()
-        self.data_vpn = {'provider_type': 'vpn', 'default_vpn_provider': 'CyberGhost'}
+        self.data_vpn = {
+            'provider_type': 'vpn',
+            'default_vpn_provider': json.dumps(
+                ['ExpressVPN', 'CyberGhost', 'Access'], separators=(',', ':')
+            ),
+        }
         self.data_email = {
             'provider_type': 'email',
-            'default_from_email': 'user@dynamic_settings.com',
+            'default_from_email': json.dumps(
+                [
+                    'admin@dynamic_settings.com',
+                    'account@dynamic_settings.com',
+                    'audit@dynamic_settings.com',
+                    'user@dynamic_settings.com',
+                    'editor@dynamic_settings.com',
+                ],
+                separators=(',', ':'),
+            ),
         }
 
     def test_get(self) -> None:

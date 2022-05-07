@@ -13,11 +13,12 @@ exclude_lines =
 
 [run]
 omit =
-    # omit anything in a .local directory anywhere
+    # omit anything in .local, env, htmlcov directory anywhere
     */.local/*
     */env/*
     */htmlcov/*
-    # omit everything in /usr
+    # omit some files in /dynamic_settings
     dynamic_settings/urls.py
-    # omit this single file
+    dynamic_settings/settings.py
+    # omit manage.py file
     manage.py
