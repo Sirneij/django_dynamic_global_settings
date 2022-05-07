@@ -1,4 +1,5 @@
 import json
+from django.http import HttpRequest
 
 from django.http.response import JsonResponse
 from django.shortcuts import render
@@ -6,7 +7,7 @@ from django.shortcuts import render
 from .models import GenericSettings
 
 
-def index(request):
+def index(request: HttpRequest):
     """App's entry point."""
     generic_settings = GenericSettings.load()
     context = {
@@ -15,7 +16,7 @@ def index(request):
     return render(request, 'index.html', context)
 
 
-def change_settings(request):
+def change_settings(request: HttpRequest) -> JsonResponse:
     """Route that handles post requests."""
     if request.method == 'POST':
         provider_type = request.POST.get('provider_type')

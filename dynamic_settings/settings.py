@@ -10,11 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
-import os
-from email.policy import default
 from pathlib import Path
 
-from decouple import config
+import dj_database_url
+from decouple import Csv, config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -24,17 +23,22 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-e0-8sjm@)(fh@fk9a!i8yy2%hd&lu38qsw(_0jkk#4hx4x+qkm'
+SECRET_KEY: str = config(
+    'SECRET_KEY',
+    default='django-insecure-e0-8sjm@)(fh@fk9a!i8yy2%hd&lu38qsw(_0jkk#4hx4x+qkm',
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG: bool = config('DEBUG', default=True, cast=bool)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS: list[str] = config(
+    'ALLOWED_HOSTS', default='127.0.0.1,localhost', cast=Csv()
+)
 
 
 # Application definition
 
-INSTALLED_APPS = [
+INSTALLED_APPS: list[str] = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -44,7 +48,7 @@ INSTALLED_APPS = [
     'core.apps.CoreConfig',
 ]
 
-MIDDLEWARE = [
+MIDDLEWARE: list[str] = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -54,7 +58,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'dynamic_settings.urls'
+ROOT_URLCONF: str = 'dynamic_settings.urls'
 
 TEMPLATES = [
     {
@@ -72,7 +76,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'dynamic_settings.wsgi.application'
+WSGI_APPLICATION: str = 'dynamic_settings.wsgi.application'
 
 
 # Database
@@ -84,22 +88,14 @@ DATABASES = {
         'NAME': config('DB_NAME', default='dynamic_settings_db'),
         'USER': config('DB_USER', default='quickcheck'),
         'PASSWORD': config('DB_PASSWORD', default='password'),
-        'HOST': 'localhost',
+        'HOST': '127.0.0.1',
         'PORT': 5432,
     },
 }
-
-if os.environ.get('GITHUB_WORKFLOW'):
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'github_actions',
-            'USER': 'postgres',
-            'PASSWORD': 'postgres',
-            'HOST': '127.0.0.1',
-            'PORT': '5432',
-        }
-    }
+if config('GITHUB_WORKFLOW', default=False, cast=bool):
+    DATABASES['default']['NAME'] = 'github_actions'
+    DATABASES['default']['USER'] = 'postgres'
+    DATABASES['default']['PASSWORD'] = 'postgres'
 
 
 # Password validation
@@ -124,22 +120,26 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE: str = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE: str = 'UTC'
 
-USE_I18N = True
+USE_I18N: bool = True
 
-USE_TZ = True
+USE_TZ: bool = True
 
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_URL: str = 'static/'
+STATIC_ROOT: str = BASE_DIR / 'staticfiles'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD: str = 'django.db.models.BigAutoField'
+
+
+db_from_env = dj_database_url.config(conn_max_age=500)
+DATABASES['default'].update(db_from_env)
