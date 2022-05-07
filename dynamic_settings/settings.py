@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 import dj_database_url
@@ -92,7 +93,7 @@ DATABASES = {
         'PORT': 5432,
     },
 }
-if config('GITHUB_WORKFLOW', default=False, cast=bool):
+if os.environ.get('GITHUB_WORKFLOW'):
     DATABASES['default']['NAME'] = 'github_actions'
     DATABASES['default']['USER'] = 'postgres'
     DATABASES['default']['PASSWORD'] = 'postgres'

@@ -1,6 +1,6 @@
 import json
-from django.http import HttpRequest
 
+from django.http import HttpRequest
 from django.http.response import JsonResponse
 from django.shortcuts import render
 
