@@ -21,19 +21,19 @@ DB_PASSWORD=your database password
 Then, create a virtual environment using any of `venv`, `poetry`, `virtualenv`, and `pipenv`. I used `virtualenv` while developing the app. Having created the virtual environment, activate it and install the project's dependencies by issuing the following command in your terminal:
 
 ```bash
-pip install -r requirements.txt
+(env) sirneij@pop-os ~/D/P/T/dynamic_settings (main)> pip install -r requirements.txt
 ```
 
 Then, `migrate` the database:
 
 ```bash
-python manage.py migrate
+(env) sirneij@pop-os ~/D/P/T/dynamic_settings (main)> python manage.py migrate
 ```
 
 Thereafter, run the project:
 
 ```bash
-python manage.py run
+(env) sirneij@pop-os ~/D/P/T/dynamic_settings (main)> python manage.py run
 ```
 
 [1]: https://dev.to/sirneij/making-django-global-settings-dynamic-the-singleton-design-pattern-25en 'Making Django Global Settings Dynamic: The Singleton Design Pattern'
