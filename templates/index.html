@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <title>Dynamic Settings Variable</title>
     <!-- CSS only -->
     <link
@@ -73,7 +74,7 @@
     </style>
   </head>
   <body>
-    <div class="content">
+    <div class="container">
       <div class="row justify-content-center mt-5">
         <div class="col-md-5 grid-margin stretch-card">
           <div class="card">
@@ -183,6 +184,14 @@
           </div>
         </div>
       </div>
+      <footer class="d-flex flex-wrap justify-content-center">
+        <a
+          href="https://github.com/sirneij"
+          class="col-md-4 d-flex py-3 px-3 link-dark text-decoration-none justify-content-center"
+        >
+          &copy; <span id="year"></span> &nbsp; John Owolabi Idogun </a
+        >.
+      </footer>
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -196,6 +205,7 @@
 
     <script>
       'use strict';
+      document.getElementById('year').innerHTML = new Date().getFullYear();
       const csrftoken = $('[name=csrfmiddlewaretoken]').val();
       if (csrftoken) {
         function csrfSafeMethod(method) {
